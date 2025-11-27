@@ -16,21 +16,19 @@ const apiClient = axios.create({
 })
 
 // ------------------------------------------------------
-// FETCH DETECTIONS (with auto-fix for image URLs)
+// FETCH DETECTIONS — backend now returns ARRAY, not {data:...}
 // ------------------------------------------------------
 export const fetchDetections = async () => {
   try {
     const response = await apiClient.get('/detections', {
-      params: { t: Date.now() }, // Prevent caching
+      params: { t: Date.now() },
     })
 
-    const data = response.data?.data || []
+    let detections = response.data   // backend returns pure array
 
-    // Map each detection to replace localhost URLs with ngrok
-    const mapped = data.map((item) => ({
+    // URL FIXER (replaces localhost with ngrok)
+    detections = detections.map((item) => ({
       ...item,
-
-      // Fix image URLs returned from backend
       image_url: item.image_url
         ? item.image_url.replace("http://localhost:8000", backendURL)
         : null,
@@ -39,14 +37,13 @@ export const fetchDetections = async () => {
         ? item.annotated_url.replace("http://localhost:8000", backendURL)
         : null,
 
-      // Fix crop URLs
-      crops: item.crops?.map(crop => ({
+      crops: item.crops?.map((crop) => ({
         ...crop,
-        crop_url: crop.crop_url.replace("http://localhost:8000", backendURL)
+        crop_url: crop.crop_url.replace("http://localhost:8000", backendURL),
       })) || [],
     }))
 
-    return mapped
+    return detections
   } catch (error) {
     console.error("API ERROR (fetchDetections):", error)
     return []

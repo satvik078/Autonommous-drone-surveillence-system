@@ -98,7 +98,7 @@ const Dashboard = () => {
   const pollDetections = useCallback(async () => {
     try {
       const payload = await fetchDetections()
-      const hydrated = enhanceDetections(payload?.data || [])
+      const hydrated = enhanceDetections(payload || [])
       setDetections(hydrated)
       setStats(deriveStats(hydrated))
       setError('')
