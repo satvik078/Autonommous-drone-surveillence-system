@@ -16,19 +16,26 @@ const apiClient = axios.create({
 })
 
 // ------------------------------------------------------
-// FETCH DETECTIONS — backend now returns ARRAY, not {data:...}
+// FETCH DETECTIONS — backend now returns PURE ARRAY
 // ------------------------------------------------------
 export const fetchDetections = async () => {
   try {
     const response = await apiClient.get('/detections', {
-      params: { t: Date.now() },
-    })
+      params: { t: Date.now() }, // prevent caching
+    });
 
-    let detections = response.data   // backend returns pure array
+    let detections = response.data; // MUST be PURE ARRAY
 
-    // URL FIXER (replaces localhost with ngrok)
+    if (!Array.isArray(detections)) {
+      console.error("❌ Backend did NOT return array. Received:", detections);
+      return [];
+    }
+
+    // Fix URLs for DEPLOYED frontend
     detections = detections.map((item) => ({
       ...item,
+
+      // Fix main images
       image_url: item.image_url
         ? item.image_url.replace("http://localhost:8000", backendURL)
         : null,
@@ -37,17 +44,19 @@ export const fetchDetections = async () => {
         ? item.annotated_url.replace("http://localhost:8000", backendURL)
         : null,
 
+      // Fix crop URLs
       crops: item.crops?.map((crop) => ({
         ...crop,
         crop_url: crop.crop_url.replace("http://localhost:8000", backendURL),
       })) || [],
-    }))
+    }));
 
-    return detections
+    return detections;
+
   } catch (error) {
-    console.error("API ERROR (fetchDetections):", error)
-    return []
+    console.error("API ERROR (fetchDetections):", error);
+    return [];
   }
-}
+};
 
-export default apiClient
+export default apiClient;
