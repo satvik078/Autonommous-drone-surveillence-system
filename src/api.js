@@ -1,9 +1,7 @@
 import axios from 'axios'
 
-const backendURL = import.meta.env.VITE_BACKEND_URL
-
 const apiClient = axios.create({
-  baseURL: backendURL,
+  baseURL:'https://unchevroned-squirrelish-eugenio.ngrok-free.dev',
   timeout: 8000,
   headers: {
     'Cache-Control': 'no-cache',
