@@ -48,3 +48,4 @@ vite.config.js.timestamp*
 # Production build duplicates
 /build
 /dist
+.env

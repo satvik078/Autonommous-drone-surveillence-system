@@ -1,7 +1,9 @@
 import axios from 'axios'
 
+const backendURL = import.meta.env.VITE_BACKEND_URL
+
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: backendURL,
   timeout: 8000,
   headers: {
     'Cache-Control': 'no-cache',
