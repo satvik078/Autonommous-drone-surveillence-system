@@ -1,0 +1,7 @@
+*.pt
+*.pth
+models/
+weights/
+yolov8n.pt
+yolov8x.pt
+
